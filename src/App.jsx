@@ -27,6 +27,12 @@ export default function TempleViewSystem() {
   const [viewPhotoModal, setViewPhotoModal] = useState(false);
   const [viewPhotoUrl, setViewPhotoUrl] = useState('');
 
+  // "(서비스)" 문자열 제거 함수
+  const removeServiceText = (text) => {
+    if (!text) return text;
+    return text.replace(/\(서비스\)/g, '').trim();
+  };
+
   useEffect(() => {
     const believersRef = ref(database, 'believers');
     const unsubscribe = onValue(believersRef, (snapshot) => {
@@ -90,7 +96,7 @@ export default function TempleViewSystem() {
         const nameMatch = (b.name || '').toLowerCase().includes(lowerSearchWord);
         const phoneMatch = (b.phone || '').includes(searchWord);
         const bulsaContentMatch = (b.bulsa || []).some(item => 
-          (item.content || '').toLowerCase().includes(lowerSearchWord)
+          removeServiceText(item.content || '').toLowerCase().includes(lowerSearchWord)
         );
         return nameMatch || phoneMatch || bulsaContentMatch;
       });
@@ -279,7 +285,7 @@ export default function TempleViewSystem() {
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex-1">
                           {b.size && <span className="text-purple-700 font-bold text-sm sm:text-base">[{b.size}]</span>}
-                          <span className="font-semibold text-gray-800 text-sm sm:text-base ml-2">{b.content}</span>
+                          <span className="font-semibold text-gray-800 text-sm sm:text-base ml-2">{removeServiceText(b.content)}</span>
                           <span className="text-gray-600 ml-2 sm:ml-4 text-xs sm:text-sm">({b.person})</span>
                           {b.location && <span className="text-gray-600 ml-1 sm:ml-2 text-xs sm:text-sm">위치: {b.location}</span>}
                         </div>
