@@ -215,6 +215,7 @@ export default function TempleViewSystem() {
                       <tr className="bg-gradient-to-r from-purple-100 to-indigo-100 border-b-2 border-purple-300">
                         <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-bold text-purple-900 whitespace-nowrap">이름</th>
                         <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-bold text-purple-900 whitespace-nowrap">전화번호</th>
+                        <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-bold text-purple-900 whitespace-nowrap">주소</th>
                         <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-xs sm:text-sm font-bold text-purple-900 whitespace-nowrap">불사내용</th>
                       </tr>
                     </thead>
@@ -226,6 +227,15 @@ export default function TempleViewSystem() {
                           </td>
                           <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-600 whitespace-nowrap">
                             {believer.phone}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 sm:py-4 text-xs sm:text-sm text-gray-600">
+                            <span className="block max-w-[150px] truncate" title={believer.address || ''}>
+                              {believer.address ? (
+                                believer.address.length > 10 ? 
+                                  believer.address.substring(0, 10) + '...' : 
+                                  believer.address
+                              ) : '-'}
+                            </span>
                           </td>
                           <td className="px-3 sm:px-6 py-2 text-xs sm:text-sm whitespace-nowrap">
                             <button 
