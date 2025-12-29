@@ -92,14 +92,18 @@ export default function TempleViewSystem() {
         }
       });
       const allTextMatches = textSearchParts.every(searchWord => {
-        const lowerSearchWord = searchWord.toLowerCase();
-        const nameMatch = (b.name || '').toLowerCase().includes(lowerSearchWord);
-        const phoneMatch = (b.phone || '').includes(searchWord);
-        const bulsaContentMatch = (b.bulsa || []).some(item => 
-          removeServiceText(item.content || '').toLowerCase().includes(lowerSearchWord)
-        );
-        return nameMatch || phoneMatch || bulsaContentMatch;
-      });
+  const lowerSearchWord = searchWord.toLowerCase();
+  const nameMatch = (b.name || '').toLowerCase().includes(lowerSearchWord);
+  const phoneMatch = (b.phone || '').includes(searchWord);
+  const bulsaContentMatch = (b.bulsa || []).some(item => 
+    removeServiceText(item.content || '').toLowerCase().includes(lowerSearchWord)
+  );
+  // 🆕 봉안자/복위자 검색 추가
+  const bulsaPersonMatch = (b.bulsa || []).some(item => 
+    (item.person || '').toLowerCase().includes(lowerSearchWord)
+  );
+  return nameMatch || phoneMatch || bulsaContentMatch || bulsaPersonMatch;
+});
       if (sizeKeywords.length === 0) {
         return allTextMatches;
       }
