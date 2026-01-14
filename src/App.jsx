@@ -26,11 +26,22 @@ export default function TempleViewSystem() {
   const [showBulsaPopup, setShowBulsaPopup] = useState(false);
   const [viewPhotoModal, setViewPhotoModal] = useState(false);
   const [viewPhotoUrl, setViewPhotoUrl] = useState('');
+  const [showOnlyHighValue, setShowOnlyHighValue] = useState(false);
 
   // "(서비스)" 문자열 제거 함수
   const removeServiceText = (text) => {
     if (!text) return text;
     return text.replace(/\(서비스\)/g, '').trim();
+  };
+
+  // 100만원 이상 불사내용이 있는지 확인하는 함수
+  const hasHighValueBulsa = (believer) => {
+    if (!believer.bulsa || believer.bulsa.length === 0) return false;
+    return believer.bulsa.some(b => {
+      // amount 필드에서 금액 확인
+      const amount = b.amount || 0;
+      return amount >= 1000000;
+    });
   };
 
   useEffect(() => {
@@ -78,7 +89,7 @@ export default function TempleViewSystem() {
   }, []);
 
   const filteredBelievers = useMemo(() => {
-    return believers.filter(b => {
+    let result = believers.filter(b => {
       if (!searchTerm) return true;
       const searchParts = searchTerm.trim().split(/\s+/);
       const sizeKeywords = [];
@@ -92,25 +103,31 @@ export default function TempleViewSystem() {
         }
       });
       const allTextMatches = textSearchParts.every(searchWord => {
-  const lowerSearchWord = searchWord.toLowerCase();
-  const nameMatch = (b.name || '').toLowerCase().includes(lowerSearchWord);
-  const phoneMatch = (b.phone || '').includes(searchWord);
-  const bulsaContentMatch = (b.bulsa || []).some(item => 
-    removeServiceText(item.content || '').toLowerCase().includes(lowerSearchWord)
-  );
-  // 🆕 봉안자/복위자 검색 추가
-  const bulsaPersonMatch = (b.bulsa || []).some(item => 
-    (item.person || '').toLowerCase().includes(lowerSearchWord)
-  );
-  return nameMatch || phoneMatch || bulsaContentMatch || bulsaPersonMatch;
-});
+        const lowerSearchWord = searchWord.toLowerCase();
+        const nameMatch = (b.name || '').toLowerCase().includes(lowerSearchWord);
+        const phoneMatch = (b.phone || '').includes(searchWord);
+        const bulsaContentMatch = (b.bulsa || []).some(item => 
+          removeServiceText(item.content || '').toLowerCase().includes(lowerSearchWord)
+        );
+        const bulsaPersonMatch = (b.bulsa || []).some(item => 
+          (item.person || '').toLowerCase().includes(lowerSearchWord)
+        );
+        return nameMatch || phoneMatch || bulsaContentMatch || bulsaPersonMatch;
+      });
       if (sizeKeywords.length === 0) {
         return allTextMatches;
       }
       const hasBulsaWithSize = (b.bulsa || []).some(item => sizeKeywords.includes(item.size));
       return allTextMatches && hasBulsaWithSize;
     });
-  }, [believers, searchTerm]);
+
+    // 100만원 이상 필터링 적용
+    if (showOnlyHighValue) {
+      result = result.filter(b => hasHighValueBulsa(b));
+    }
+
+    return result;
+  }, [believers, searchTerm, showOnlyHighValue]);
 
   if (!isLoggedIn) {
     return (
@@ -209,9 +226,21 @@ export default function TempleViewSystem() {
           </div>
 
           <div className="bg-white rounded-xl shadow-lg p-4 sm:p-6 border-2 border-purple-200">
-            <h2 className="text-lg sm:text-2xl font-bold text-purple-900 mb-4 sm:mb-6">
-              신도 목록 ({filteredBelievers.length}명)
-            </h2>
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-2xl font-bold text-purple-900">
+                신도 목록 ({filteredBelievers.length}명)
+              </h2>
+              <button
+                onClick={() => setShowOnlyHighValue(!showOnlyHighValue)}
+                className={`px-4 py-2 rounded-lg font-bold text-sm sm:text-base transition-all shadow-md ${
+                  showOnlyHighValue 
+                    ? 'bg-gradient-to-r from-amber-500 to-orange-500 text-white' 
+                    : 'bg-purple-100 text-purple-700 hover:bg-purple-200'
+                }`}
+              >
+                {showOnlyHighValue ? '💎 고액불사 ON' : '💎 고액불사'}
+              </button>
+            </div>
 
             {filteredBelievers.length === 0 ? (
               <div className="text-center py-8 sm:py-12 text-purple-700">
