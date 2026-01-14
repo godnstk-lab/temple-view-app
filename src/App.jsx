@@ -40,7 +40,7 @@ export default function TempleViewSystem() {
     return believer.bulsa.some(b => {
       // amount 필드에서 금액 확인
       const amount = b.amount || 0;
-      return amount >= 1000000;
+      return amount >= 100;
     });
   };
 
