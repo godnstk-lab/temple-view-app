@@ -321,6 +321,7 @@ export default function TempleViewSystem() {
                           <span className="font-semibold text-gray-800 text-sm sm:text-base ml-2">{removeServiceText(b.content)}</span>
                           <span className="text-gray-600 ml-2 sm:ml-4 text-xs sm:text-sm">({b.person})</span>
                           {b.location && <span className="text-gray-600 ml-1 sm:ml-2 text-xs sm:text-sm">위치: {b.location}</span>}
+                          {/* 금액은 필터링용으로만 사용, 화면에는 표시 안 함 */}
                         </div>
                       </div>
                       {b.photoURLs && b.photoURLs.length > 0 && (
